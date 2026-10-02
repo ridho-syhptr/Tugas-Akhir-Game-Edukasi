@@ -1,4 +1,4 @@
-# Tugas-Akhir-Game-Edukasi
+# Tugas Akhir - Game Edukasi/Media Pembelajaran Interaktif Matematika
 
 ## Cara Penggunaan Aplikasi
 1. Buka folder `Binary`.
