@@ -1,4 +1,4 @@
-# Tugas Akhir - Game Edukasi/Media Pembelajaran Interaktif Matematika
+# Tugas Akhir - Game Edukasi/Media Pembelajaran Interaktif Matematika pada Kelas 3 - SD Negeri 26 Sungai Pinyuh
 
 ## Cara Penggunaan Aplikasi
 1. Buka folder `Binary`.
