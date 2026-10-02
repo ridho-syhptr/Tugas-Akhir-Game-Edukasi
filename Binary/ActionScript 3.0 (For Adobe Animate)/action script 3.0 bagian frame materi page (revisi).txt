@@ -1,0 +1,69 @@
+import flash.events.MouseEvent;
+import flash.media.Sound;
+import flash.media.SoundChannel;
+
+// 1. CEK BGM: Putar Musik Materi
+if (Object(root).isBGMMateriPlaying == null || Object(root).isBGMMateriPlaying == false) {
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop(); 
+    }
+    
+    // Memanggil audio langsung tanpa 'var'
+    Object(root).channelBGM = (new MusikMateri()).play(0, 999); 
+    
+    Object(root).isBGMMateriPlaying = true;
+    Object(root).isBGMMenuPlaying = false;
+    Object(root).isBGMLatihanPlaying = false;
+}
+
+// 2. TOMBOL KEMBALI KE MAIN MENU
+button_back_materi.addEventListener(MouseEvent.CLICK, kembaliKeMenuDariMateriUtama);
+function kembaliKeMenuDariMateriUtama(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    
+    // Matikan status agar Main Menu mau memutar lagunya sendiri
+    Object(root).isBGMMateriPlaying = false; 
+    gotoAndStop("Main_Menu");
+}
+
+// --- Navigasi ke Cabang Materi ---
+button_materi_sub1.addEventListener(MouseEvent.CLICK, bukaMateri1);
+function bukaMateri1(e:MouseEvent):void {
+    gotoAndStop("Materi1");
+}
+
+// --- Navigasi ke Cabang Materi ---
+button_materi_sub2.addEventListener(MouseEvent.CLICK, bukaMateri2);
+function bukaMateri2(e:MouseEvent):void {
+    gotoAndStop("Materi2");
+}
+
+// --- Navigasi ke Cabang Materi ---
+button_materi_sub3.addEventListener(MouseEvent.CLICK, bukaMateri3);
+function bukaMateri3(e:MouseEvent):void {
+    gotoAndStop("Materi3");
+}
+
+// --- Navigasi ke Cabang Materi ---
+button_materi_sub4.addEventListener(MouseEvent.CLICK, bukaMateri4);
+function bukaMateri4(e:MouseEvent):void {
+    gotoAndStop("Materi4");
+}
+
+// --- Navigasi ke Cabang Materi ---
+button_materi_sub5.addEventListener(MouseEvent.CLICK, bukaMateri5);
+function bukaMateri5(e:MouseEvent):void {
+    gotoAndStop("Materi5");
+}
+
+// --- Navigasi ke Cabang Materi ---
+button_materi_sub6.addEventListener(MouseEvent.CLICK, bukaMateri6);
+function bukaMateri6(e:MouseEvent):void {
+    gotoAndStop("Materi6");
+}
+
+// --- Navigasi ke Cabang Materi ---
+button_materi_sub7.addEventListener(MouseEvent.CLICK, bukaMateri7);
+function bukaMateri7(e:MouseEvent):void {
+    gotoAndStop("Materi7");
+}

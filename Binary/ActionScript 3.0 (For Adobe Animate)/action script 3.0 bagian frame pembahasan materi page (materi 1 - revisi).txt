@@ -1,0 +1,41 @@
+stop();
+
+// ==========================================
+// 1. CEK BGM MATERI
+// ==========================================
+if (Object(root).isBGMMateriPlaying == null || Object(root).isBGMMateriPlaying == false) {
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop();
+    }
+    
+    // Format Anti-Error 1151
+    Object(root).channelBGM = (new MusikMateri()).play(0, 999);
+    Object(root).isBGMMateriPlaying = true;
+}
+
+// ==========================================
+// 2. TOMBOL KEMBALI KE DAFTAR MATERI
+// ==========================================
+button_back_menu_materi.addEventListener(MouseEvent.CLICK, balikKeMenuMateri1);
+function balikKeMenuMateri1(e:MouseEvent):void {
+    // Tambahan SFX Klik agar setara dengan tombol lain
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Materi_Page");
+}
+
+// ==========================================
+// 3. LOGIKA TOMBOL "LATIHAN SOAL" (SELALU TERBUKA)
+// ==========================================
+// Asumsi nama tombol Anda di layar adalah button_latihan_materi1
+button_latihan_materi1.addEventListener(MouseEvent.CLICK, masukKeLatihan1);
+function masukKeLatihan1(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+
+    // Karena ini Latihan 1, langsung matikan BGM Materi & pindah tanpa cek status penguncian
+    Object(root).isBGMMateriPlaying = false; 
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop();
+    }
+    
+    gotoAndStop("Latihan1_Page");
+}

@@ -1,0 +1,209 @@
+stop();
+
+import flash.events.MouseEvent;
+import flash.utils.setTimeout;
+import flash.utils.Timer;
+import flash.events.TimerEvent;
+
+import flash.media.Sound;
+import flash.media.SoundChannel;
+
+// --- SISTEM WAKTU (TIMER) ---
+var waktuTersisaSulit:int = 180; // Atur waktu kuis (misal 120 detik)
+var timerKuisSulit:Timer = new Timer(1000, waktuTersisaSulit);
+
+timerKuisSulit.addEventListener(TimerEvent.TIMER, hitungMundurSulit);
+timerKuisSulit.start(); // Jalankan waktu
+
+function hitungMundurSulit(e:TimerEvent):void {
+    waktuTersisaSulit--;
+    teks_waktu.text = waktuTersisaSulit + " detik";
+    
+    // Jika waktu habis
+    if (waktuTersisaSulit <= 0) {
+        timerKuisSulit.stop();
+        timerKuisSulit.removeEventListener(TimerEvent.TIMER, hitungMundurSulit); 
+        
+        // --- BARIS BARU: KIRIM DATA KE RESULT ---
+        Object(root).skorAkhir = skorSulit;
+        Object(root).levelAktif = "Sulit";
+        
+        gotoAndStop("Kuis_Result");
+    }
+}
+
+// --- MEREKAM POSISI AWAL KOIN ---
+var posAwal:Object = new Object();
+posAwal.tambah = {x: koin_tambah.x, y: koin_tambah.y};
+posAwal.kurang = {x: koin_kurang.x, y: koin_kurang.y};
+posAwal.kali = {x: koin_kali.x, y: koin_kali.y};
+posAwal.bagi = {x: koin_bagi.x, y: koin_bagi.y};
+
+// --- BANK SOAL DRAG & DROP (20 SOAL) ---
+var bankSoal:Array = [
+    // 20 Soal
+    {angka1: "80", angka2: "20", hasil: "60", jawabanBenar: koin_kurang},
+    {angka1: "15", angka2: "5", hasil: "20", jawabanBenar: koin_tambah},
+    {angka1: "4", angka2: "5", hasil: "20", jawabanBenar: koin_kali},
+    {angka1: "30", angka2: "3", hasil: "10", jawabanBenar: koin_bagi},
+    {angka1: "100", angka2: "50", hasil: "50", jawabanBenar: koin_kurang},
+    {angka1: "120", angka2: "30", hasil: "150", jawabanBenar: koin_tambah},
+    {angka1: "250", angka2: "50", hasil: "200", jawabanBenar: koin_kurang},
+    {angka1: "6", angka2: "5", hasil: "30", jawabanBenar: koin_kali},
+    {angka1: "40", angka2: "4", hasil: "10", jawabanBenar: koin_bagi},
+    {angka1: "45", angka2: "45", hasil: "90", jawabanBenar: koin_tambah},
+    {angka1: "100", angka2: "25", hasil: "75", jawabanBenar: koin_kurang},
+    {angka1: "8", angka2: "3", hasil: "24", jawabanBenar: koin_kali},
+    {angka1: "50", angka2: "5", hasil: "10", jawabanBenar: koin_bagi},
+    {angka1: "200", angka2: "150", hasil: "350", jawabanBenar: koin_tambah},
+    {angka1: "500", angka2: "100", hasil: "400", jawabanBenar: koin_kurang}
+];
+	
+// --- FUNGSI MENGACAK URUTAN SOAL ---
+bankSoal.sort(acakSoalSulit);
+
+function acakSoalSulit(a:Object, b:Object):int {
+    return Math.floor(Math.random() * 3) - 1;
+}
+
+var skorSulit:int = 0;
+var indeksSoal:int = 0;
+
+// --- FUNGSI MENAMPILKAN SOAL ---
+function tampilkanSoalSulit():void {
+    if (indeksSoal < bankSoal.length) {
+		// --- MUNCULKAN KOIN KEMBALI SAAT KUIS MULAI ---
+        koin_tambah.visible = true; koin_kurang.visible = true;
+        koin_kali.visible = true; koin_bagi.visible = true;
+		
+        teks_nomor_soal.text = "Soal " + (indeksSoal + 1) + " dari " + bankSoal.length;
+        teks_angka1.text = bankSoal[indeksSoal].angka1;
+        teks_angka2.text = bankSoal[indeksSoal].angka2;
+        teks_hasil.text = bankSoal[indeksSoal].hasil;
+        teks_skor.text = "Skor: " + skorSulit;
+        
+        // 1. Sembunyikan tulisan CORRECT/WRONG saat soal baru muncul
+        mc_feedback.gotoAndStop(1); 
+        
+        kembalikanSemuaKoin();
+        
+        // 2. Buka kunci koin agar bisa ditarik lagi
+        koin_tambah.mouseEnabled = true; koin_kurang.mouseEnabled = true;
+        koin_kali.mouseEnabled = true; koin_bagi.mouseEnabled = true;
+    } else {
+        timerKuisSulit.stop();
+        if (timerKuisSulit.hasEventListener(TimerEvent.TIMER)) {
+            timerKuisSulit.removeEventListener(TimerEvent.TIMER, hitungMundurSulit);
+        }
+        
+        // --- SEMBUNYIKAN KOIN SEBELUM PINDAH KE RESULT ---
+        koin_tambah.visible = false; koin_kurang.visible = false;
+        koin_kali.visible = false; koin_bagi.visible = false;
+        
+        // --- BARIS BARU: KIRIM DATA KE RESULT ---
+        Object(root).skorAkhir = skorSulit;
+        Object(root).levelAktif = "Sulit";
+        
+        gotoAndStop("Kuis_Result");
+    }
+}
+
+// --- LOGIKA MELEPAS KOIN (DROP) ---
+function lepasKoin(e:MouseEvent):void {
+    var koinDipegang:MovieClip = e.currentTarget as MovieClip;
+    koinDipegang.stopDrag();
+    
+    // Mengecek apakah koin dilepas tepat di area 'kotak_target'
+    if (koinDipegang.hitTestObject(kotak_target)) {
+        
+        // 1. Matikan semua koin sementara waktu agar anak tidak bisa menarik koin lain saat jeda
+        koin_tambah.mouseEnabled = false; koin_kurang.mouseEnabled = false;
+        koin_kali.mouseEnabled = false; koin_bagi.mouseEnabled = false;
+        
+        // 2. Kunci posisi koin yang ditarik agar pas di tengah 'kotak_target'
+        koinDipegang.x = kotak_target.x;
+        koinDipegang.y = kotak_target.y;
+        
+        // 3. Pengecekan Jawaban Benar atau Salah
+        if (koinDipegang == bankSoal[indeksSoal].jawabanBenar) {
+            skorSulit += 10;
+            teks_skor.text = "Skor: " + skorSulit; 
+            
+            // Munculkan "CORRECT" di Frame 2
+            mc_feedback.gotoAndStop(2);
+            
+            // --- PUTAR SFX BENAR DI SINI ---
+            (new SFXBenar()).play(0, 0, Object(root).sfxTransform);
+            
+        } else {
+            // Munculkan "WRONG" di Frame 3
+            mc_feedback.gotoAndStop(3);
+            
+            // --- PUTAR SFX SALAH DI SINI ---
+            (new SFXSalah()).play(0, 0, Object(root).sfxTransform);
+        }
+        
+        // 4. Berikan jeda 1,5 detik (1500 milidetik), lalu panggil fungsi pindahSoalSulit
+        setTimeout(pindahSoalSulit, 1500); 
+        
+    } else {
+        // Jika koin dilepas sembarangan di luar kotak target, kembalikan ke posisi awal di bawah
+        kembalikanSatuKoin(koinDipegang);
+    }
+}
+
+// --- SENSOR TARIK (DRAG) ---
+var daftarKoin:Array = [koin_tambah, koin_kurang, koin_kali, koin_bagi];
+for (var i:int = 0; i < daftarKoin.length; i++) {
+    daftarKoin[i].addEventListener(MouseEvent.MOUSE_DOWN, tarikKoin);
+    daftarKoin[i].addEventListener(MouseEvent.MOUSE_UP, lepasKoin);
+}
+
+function tarikKoin(e:MouseEvent):void {
+    var koinDipegang:MovieClip = e.currentTarget as MovieClip;
+    koinDipegang.startDrag();
+    setChildIndex(koinDipegang, numChildren - 1); 
+}
+
+// --- FUNGSI PENDUKUNG ---
+function kembalikanSatuKoin(koin:MovieClip):void {
+    if (koin == koin_tambah) { koin.x = posAwal.tambah.x; koin.y = posAwal.tambah.y; }
+    if (koin == koin_kurang) { koin.x = posAwal.kurang.x; koin.y = posAwal.kurang.y; }
+    if (koin == koin_kali) { koin.x = posAwal.kali.x; koin.y = posAwal.kali.y; }
+    if (koin == koin_bagi) { koin.x = posAwal.bagi.x; koin.y = posAwal.bagi.y; }
+}
+
+function kembalikanSemuaKoin():void {
+    koin_tambah.x = posAwal.tambah.x; koin_tambah.y = posAwal.tambah.y;
+    koin_kurang.x = posAwal.kurang.x; koin_kurang.y = posAwal.kurang.y;
+    koin_kali.x = posAwal.kali.x; koin_kali.y = posAwal.kali.y;
+    koin_bagi.x = posAwal.bagi.x; koin_bagi.y = posAwal.bagi.y;
+}
+
+function pindahSoalSulit():void {
+    indeksSoal++;
+    tampilkanSoalSulit();
+}
+
+tampilkanSoalSulit();
+
+button_back_kuis.addEventListener(MouseEvent.CLICK, keluarDariKuisSulit);
+function keluarDariKuisSulit(e:MouseEvent):void {
+    // 1. Putar SFX Klik
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    
+    // 2. MATIKAN TIMER AGAR TIDAK BOCOR
+    if (timerKuisSulit != null) {
+        timerKuisSulit.stop();
+        timerKuisSulit.removeEventListener(TimerEvent.TIMER, hitungMundurSulit);
+    }
+    
+    // 3. PENTING: SEMBUNYIKAN KOIN SEBELUM KELUAR AGAR TIDAK TERTINGGAL!
+    koin_tambah.visible = false;
+    koin_kurang.visible = false;
+    koin_kali.visible = false;
+    koin_bagi.visible = false;
+    
+    // 4. Langsung pindah ke menu level tanpa mematikan BGM
+    gotoAndStop("Kuis_Page_Level"); 
+}

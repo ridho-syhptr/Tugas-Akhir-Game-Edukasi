@@ -1,0 +1,15 @@
+import flash.events.MouseEvent; // Tambahan wajib agar sistem mengenali klik
+
+stop();
+
+// Baris buttonMode DIHAPUS karena button_mulai sudah berjenis SimpleButton
+// yang secara otomatis sudah mengubah kursor menjadi ikon tangan.
+
+// Memberikan 'pendengar' (listener) pada tombol agar merespons saat diklik
+button_mulai.addEventListener(MouseEvent.CLICK, keMainMenu);
+
+// Fungsi yang akan dijalankan ketika tombol diklik
+function keMainMenu(e:MouseEvent):void {
+    // Berpindah dan berhenti di frame dengan label "Main_Menu"
+    gotoAndStop("Main_Menu");
+}

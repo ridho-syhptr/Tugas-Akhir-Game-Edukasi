@@ -1,0 +1,171 @@
+stop();
+
+import flash.events.MouseEvent;
+import flash.utils.Timer;
+import flash.events.TimerEvent;
+
+import flash.media.Sound;
+import flash.media.SoundChannel;
+
+
+// Variabel Kuis
+var skor:int = 0;
+var nomorSoal:int = 1;
+var totalSoal:int = 10;
+var waktu:int = 180;
+var jawabanBenar:String = "";
+var jawabanUser:String = "";
+
+// Setup Timer
+var timerKuis:Timer = new Timer(1000, 180); // 1 detik (1000ms) berulang 60 kali
+timerKuis.addEventListener(TimerEvent.TIMER, updateWaktu);
+timerKuis.addEventListener(TimerEvent.TIMER_COMPLETE, waktuHabis);
+
+mulaiKuis();
+
+function mulaiKuis():void {
+    skor = 0;
+    nomorSoal = 1;
+    waktu = 180;
+    text_waktu.text = waktu + "s";
+    
+    // BARIS BARU: Menampilkan skor 0 di layar saat kuis baru dimulai
+    if (teks_skor != null) {
+        teks_skor.text = String(skor) + " poin";
+    }
+    
+    timerKuis.start();
+    buatSoal();
+}
+
+function buatSoal():void {
+    jawabanUser = "";
+    text_ratusan.text = "";
+    text_puluhan.text = "";
+    text_satuan.text = "";
+    
+    // Membuat angka acak ratusan (100 - 999)
+    var angkaAcak:int = Math.floor(Math.random() * 900) + 100;
+    jawabanBenar = String(angkaAcak);
+    
+    text_soal.text = "Soal " + nomorSoal + "\n" + angkaAcak;
+}
+
+// Menambahkan fungsi klik ke semua tombol angka (0-9)
+button_0.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_1.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_2.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_3.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_4.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_5.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_6.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_7.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_8.addEventListener(MouseEvent.CLICK, tekanAngka);
+button_9.addEventListener(MouseEvent.CLICK, tekanAngka);
+
+function tekanAngka(e:MouseEvent):void {
+	// --- PUTAR SFX KLIK SAAT TOMBOL ANGKA DITEKAN ---
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+
+    // Mengambil angka dari nama tombol (misal: "btn_7" -> "7")
+    var angkaDitekan:String = e.currentTarget.name.split("_")[1];
+    
+    // ... (sisa kode di dalam fungsi tekanAngka biarkan seperti semula) ...
+	
+    if (jawabanUser.length < 3) {
+        jawabanUser += angkaDitekan;
+        
+        // Memasukkan angka ke kotak yang sesuai
+        if (jawabanUser.length == 1) text_ratusan.text = angkaDitekan;
+        if (jawabanUser.length == 2) text_puluhan.text = angkaDitekan;
+        if (jawabanUser.length == 3) {
+            text_satuan.text = angkaDitekan;
+            
+            // TAMPILKAN FEEDBACK SEGERA SETELAH KOTAK KETIGA TERISI
+            tampilkanFeedback();
+            
+            // Jeda 2 detik (2000 ms) sebelum ganti soal, agar pemain bisa melihat hasilnya
+            setTimeout(lanjutSoalBerikutnya, 2000); 
+        }
+    }
+}
+
+// Fungsi Baru: Hanya untuk mengecek dan menampilkan animasi benar/salah beserta suaranya
+function tampilkanFeedback():void {
+    if (jawabanUser == jawabanBenar) {
+        skor += 10; // Tambah poin jika benar
+        
+        // BARIS BARU: Segera update angka skor di layar!
+        if (teks_skor != null) {
+            teks_skor.text = String(skor) + " poin";
+        }
+        
+        mc_feedback.gotoAndStop(2); // Tampilkan Centang Hijau
+        
+        // --- PUTAR SFX BENAR DI SINI (ANTI-ERROR 1151) ---
+        (new SFXBenar()).play(0, 0, Object(root).sfxTransform);
+        
+    } else {
+        mc_feedback.gotoAndStop(3); // Tampilkan Silang Merah
+        
+        // --- PUTAR SFX SALAH DI SINI (ANTI-ERROR 1151) ---
+        (new SFXSalah()).play(0, 0, Object(root).sfxTransform);
+    }
+}
+
+// Fungsi Baru: Bertugas membersihkan layar dan memanggil soal baru
+function lanjutSoalBerikutnya():void {
+    // Sembunyikan kembali animasi feedback (kembali ke frame kosong)
+    mc_feedback.gotoAndStop(1); 
+    
+    nomorSoal++;
+    if (nomorSoal > totalSoal) {
+        selesaiKuis();
+    } else {
+        buatSoal(); // Lanjut soal berikutnya
+    }
+}
+
+function updateWaktu(e:TimerEvent):void {
+    waktu--;
+    text_waktu.text = waktu + "s";
+}
+
+function waktuHabis(e:TimerEvent):void {
+    selesaiKuis();
+}
+
+function selesaiKuis():void {
+    // MATIKAN TIMER
+    timerKuis.stop();
+    timerKuis.removeEventListener(TimerEvent.TIMER, updateWaktu);
+    timerKuis.removeEventListener(TimerEvent.TIMER_COMPLETE, waktuHabis);
+    
+    Object(root).skorAkhir = skor; // Pastikan menggunakan nama variabel skor yang sudah di-rename (misal: skorMudah)
+	Object(root).levelAktif = "Mudah"; 
+    mc_feedback.gotoAndStop(1); 
+    gotoAndStop("Kuis_Result"); 
+}
+
+// ==========================================
+// TOMBOL KEMBALI (KHUSUS LEVEL MUDAH)
+// ==========================================
+button_back_kuis.addEventListener(MouseEvent.CLICK, keluarDariKuisMudah);
+function keluarDariKuisMudah(e:MouseEvent):void {
+    // 1. Putar SFX Klik
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+
+    // 2. MATIKAN TIMER AGAR TIDAK BOCOR
+    if (timerKuis != null) {
+        timerKuis.stop();
+        timerKuis.removeEventListener(TimerEvent.TIMER, updateWaktu);
+        timerKuis.removeEventListener(TimerEvent.TIMER_COMPLETE, waktuHabis);
+    }
+    
+    // PERHATIAN: Bagian 'channelBGM.stop()' SUDAH DIHAPUS agar musik tetap berlanjut!
+    
+    // 3. KEMBALI KE MENU LEVEL
+    gotoAndStop("Kuis_Page_Level");
+}

@@ -1,0 +1,22 @@
+stop();
+
+button_mulai_kuis_mudah.addEventListener(MouseEvent.CLICK, mulaiKuisMudah);
+function mulaiKuisMudah(e:MouseEvent):void {
+    // 1. Putar SFX dengan deklarasi lokal (Aman dari Error 1151)
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    // 2. PENTING: Catat level yang dimainkan ke memori global
+    Object(root).levelAktif = "Mudah";
+    
+    gotoAndStop("Kuis_Main_Mudah");
+}
+
+// Asumsi nama instance tombol kembalinya adalah: button_back_kuis_mudah
+button_back_kuis_mudah.addEventListener(MouseEvent.CLICK, batalIkutKuisMudah);
+function batalIkutKuisMudah(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    gotoAndStop("Kuis_Page_Level");
+}

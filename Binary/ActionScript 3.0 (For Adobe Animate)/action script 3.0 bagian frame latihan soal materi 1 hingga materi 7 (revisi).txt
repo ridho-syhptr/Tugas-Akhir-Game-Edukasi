@@ -1,0 +1,192 @@
+stop();
+
+import flash.events.MouseEvent;
+import flash.utils.Timer;
+import flash.events.TimerEvent;
+import flash.utils.setTimeout;
+
+import flash.media.Sound;
+import flash.media.SoundChannel;
+
+// 1. CEK BGM: Putar Musik Latihan
+if (Object(root).isBGMLatihanPlaying == null || Object(root).isBGMLatihanPlaying == false) {
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop();
+    }
+    
+    // Memanggil audio langsung tanpa 'var' agar bebas Error 1151
+    Object(root).channelBGM = (new MusikLatihan()).play(0, 999);
+    
+    Object(root).isBGMLatihanPlaying = true;
+    Object(root).isBGMMenuPlaying = false; 
+    Object(root).isBGMMateriPlaying = false; 
+}
+
+// ==========================================
+// 1. PENGATURAN VARIABEL & WAKTU (3 MENIT)
+// ==========================================
+var skorKoinLatihan1:int = 0;
+var indeksSoalLatihan1:int = 0;
+var waktuLatihan1:int = 180; // 3 menit = 180 detik
+
+var timerLatihan1:Timer = new Timer(1000, waktuLatihan1);
+timerLatihan1.addEventListener(TimerEvent.TIMER, hitungMundurLatihan1);
+timerLatihan1.start();
+
+function hitungMundurLatihan1(e:TimerEvent):void {
+    waktuLatihan1--;
+    teks_waktu.text = waktuLatihan1 + " detik";
+    
+    if (waktuLatihan1 <= 0) {
+        selesaiLatihan1();
+    }
+}
+
+// ==========================================
+// 2. BANK SOAL (MATERI 1: BILANGAN CACAH)
+// ==========================================
+var bankSoalLatihan1:Array = [
+    {soal: "Jumlah balok ratusan ada 4, puluhan ada 2, dan satuan ada 5. Bilangan berapakah itu?", jawabanBenar: "425", opsiA: "452", opsiB: "425", opsiC: "245"},
+    {soal: "Lambang bilangan dari 3 ratusan + 4 puluhan + 6 satuan adalah...", jawabanBenar: "346", opsiA: "364", opsiB: "346", opsiC: "436"},
+    {soal: "Angka pada spidometer motor menunjukkan '597'. Bagaimana cara membacanya?", jawabanBenar: "Lima ratus sembilan puluh tujuh", opsiA: "Lima ratus tujuh puluh sembilan", opsiB: "Lima ratus sembilan puluh tujuh", opsiC: "Lima sembilan tujuh"},
+    {soal: "Kedalaman laut tertulis '405 meter'. Cara membaca bilangan 405 adalah...", jawabanBenar: "Empat ratus lima", opsiA: "Empat ratus lima puluh", opsiB: "Empat ratus lima", opsiC: "Empat nol lima"},
+    {soal: "Nomor pada kereta api adalah 220. Bilangan ini dibaca...", jawabanBenar: "Dua ratus dua puluh", opsiA: "Dua ratus dua", opsiB: "Dua ratus dua puluh", opsiC: "Dua puluh dua"},
+    {soal: "Jarak rumah ke sekolah adalah 236 meter. Dibaca...", jawabanBenar: "Dua ratus tiga puluh enam", opsiA: "Dua ratus tiga puluh enam", opsiB: "Dua ratus enam puluh tiga", opsiC: "Dua tiga enam"},
+    {soal: "Lambang bilangan dari 'Sembilan ratus tiga' adalah...", jawabanBenar: "903", opsiA: "930", opsiB: "903", opsiC: "309"},
+    {soal: "Bilangan 602 dibaca...", jawabanBenar: "Enam ratus dua", opsiA: "Enam ratus dua puluh", opsiB: "Enam ratus dua", opsiC: "Enam puluh dua"},
+    {soal: "Di antara bilangan 239, 912, dan 168, manakah yang memiliki angka ratusan kurang dari 5?", jawabanBenar: "239 dan 168", opsiA: "239 dan 168", opsiB: "912 dan 168", opsiC: "239 dan 912"},
+    {soal: "Pasangan yang tepat antara lambang bilangan dan cara membacanya adalah...", jawabanBenar: "145 = Seratus empat puluh lima", opsiA: "145 = Seratus empat puluh lima", opsiB: "950 = Sembilan ratus lima", opsiC: "602 = Enam ratus dua puluh"}
+];
+
+var totalSoalLatihan1:int = bankSoalLatihan1.length;
+
+bankSoalLatihan1.sort(acakSoalLatihan1);
+function acakSoalLatihan1(a:Object, b:Object):int {
+    return Math.floor(Math.random() * 3) - 1;
+}
+
+function acakPilihanLatihan1(a:*, b:*):int {
+    return (Math.random() > 0.5) ? 1 : -1;
+}
+
+// ==========================================
+// 3. FUNGSI MENAMPILKAN SOAL
+// ==========================================
+mc_feedback.gotoAndStop(1);
+
+function tampilkanSoalLatihan1():void {
+    if (indeksSoalLatihan1 < totalSoalLatihan1) {
+        
+        // PENTING: Penulisan nomor dan isi soal sudah digabung ke satu kotak teks (teks_soal)
+        teks_soal.text = "Soal " + (indeksSoalLatihan1 + 1) + " dari " + totalSoalLatihan1 + "\n\n" + bankSoalLatihan1[indeksSoalLatihan1].soal;
+        teks_koin.text = skorKoinLatihan1 + " Koin"; 
+        
+        var daftarPilihan:Array = [bankSoalLatihan1[indeksSoalLatihan1].opsiA, bankSoalLatihan1[indeksSoalLatihan1].opsiB, bankSoalLatihan1[indeksSoalLatihan1].opsiC];
+        daftarPilihan.sort(acakPilihanLatihan1);
+        
+        // Nama instance dikembalikan ke bentuk standar tanpa akhiran _latihan1
+        teks_pilihan_a.text = daftarPilihan[0];
+        teks_pilihan_b.text = daftarPilihan[1];
+        teks_pilihan_c.text = daftarPilihan[2];
+        
+        mc_feedback.gotoAndStop(1); 
+        
+        button_a.mouseEnabled = true;
+        button_b.mouseEnabled = true;
+        button_c.mouseEnabled = true;
+    } else {
+        selesaiLatihan1();
+    }
+}
+
+tampilkanSoalLatihan1();
+
+// ==========================================
+// 4. LOGIKA JAWABAN & SKOR
+// ==========================================
+button_a.addEventListener(MouseEvent.CLICK, cekJawabanLatihan1);
+button_b.addEventListener(MouseEvent.CLICK, cekJawabanLatihan1);
+button_c.addEventListener(MouseEvent.CLICK, cekJawabanLatihan1);
+
+function cekJawabanLatihan1(e:MouseEvent):void {
+    button_a.mouseEnabled = false;
+    button_b.mouseEnabled = false;
+    button_c.mouseEnabled = false;
+	
+	// Memutar SFX Klik saat pemain menekan pilihan jawaban
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play();
+	
+	var teksJawaban:String = "";
+    if(e.currentTarget == button_a) teksJawaban = teks_pilihan_a.text;
+    if(e.currentTarget == button_b) teksJawaban = teks_pilihan_b.text;
+    if(e.currentTarget == button_c) teksJawaban = teks_pilihan_c.text;
+    
+    if(teksJawaban == bankSoalLatihan1[indeksSoalLatihan1].jawabanBenar) {
+        skorKoinLatihan1 += 10; 
+        mc_feedback.gotoAndStop(2); 
+		
+		// --- TAMBAHKAN SUARA BENAR ---
+        var suaraBenar:SFXBenar = new SFXBenar();
+        suaraBenar.play();
+		suaraBenar.play(0, 0, Object(root).sfxTransform);
+		
+    } else {
+        mc_feedback.gotoAndStop(3); 
+		
+		// --- TAMBAHKAN SUARA SALAH ---
+        var suaraSalah:SFXSalah = new SFXSalah();
+        suaraSalah.play();
+		suaraSalah.play(0, 0, Object(root).sfxTransform);
+		
+    }
+    
+    setTimeout(pindahSoalLatihan1, 1500); 
+}
+
+function pindahSoalLatihan1():void {
+    indeksSoalLatihan1++;
+    tampilkanSoalLatihan1();
+}
+
+// ==========================================
+// 5. PENYELESAIAN LATIHAN & KIRIM DATA
+// ==========================================
+function selesaiLatihan1():void {
+    if (timerLatihan1 != null) {
+        timerLatihan1.stop();
+        timerLatihan1.removeEventListener(TimerEvent.TIMER, hitungMundurLatihan1);
+    }
+    
+    Object(root).skorAkhir = skorKoinLatihan1;
+    Object(root).levelLatihanAktif = 1;
+    
+    gotoAndStop("Latihan_Result");
+}
+
+// ==========================================
+// 6. TOMBOL KELUAR DI TENGAH LATIHAN
+// ==========================================
+// Pastikan Instance Name tombol panah Anda adalah: btn_back_latihan
+btn_back_latihan.addEventListener(MouseEvent.CLICK, keluarLatihan1);
+
+function keluarLatihan1(e:MouseEvent):void {
+    // 1. Putar SFX Klik
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+
+    // 2. Matikan Timer agar tidak bocor
+    if (timerLatihan1 != null) {
+        timerLatihan1.stop();
+        timerLatihan1.removeEventListener(TimerEvent.TIMER, hitungMundurLatihan1);
+    }
+    
+    // 3. PENTING: Matikan BGM Latihan dan Reset Statusnya!
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop();
+    }
+    Object(root).isBGMLatihanPlaying = false; // Memberi tahu sistem bahwa lagu telah usai
+    
+    // 4. Kembali ke halaman persiapan latihan
+    gotoAndStop("Latihan1_Page"); 
+}

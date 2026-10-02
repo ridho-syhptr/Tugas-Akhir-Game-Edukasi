@@ -1,0 +1,69 @@
+stop();
+
+import flash.events.MouseEvent;
+
+// Pastikan tombol panah kembali Anda memiliki Instance Name: btn_back_about
+button_back_about.addEventListener(MouseEvent.CLICK, kembaliDariAbout);
+
+function kembaliDariAbout(e:MouseEvent):void {
+	// Putar SFX Klik (beserta penyesuaian volume dari setting)
+	var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+	
+	// Langsung pindah ke Main Menu TANPA mematikan BGM
+    gotoAndStop("Main_Menu");
+}
+
+==============================
+
+stop();
+
+import flash.events.MouseEvent;
+
+// Pastikan tombol panah kembali Anda memiliki Instance Name: btn_back_profile
+button_back_profile.addEventListener(MouseEvent.CLICK, kembaliDariProfile);
+
+function kembaliDariProfile(e:MouseEvent):void {
+	// Putar SFX Klik (beserta penyesuaian volume dari setting)
+	var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+	// Langsung pindah ke Main Menu TANPA mematikan BGM
+	gotoAndStop("Main_Menu");
+}
+
+==============================
+
+stop();
+
+import flash.events.MouseEvent;
+
+// Pastikan tombol panah kembali Anda memiliki Instance Name: btn_back_kompetensi
+button_back_kompetensi.addEventListener(MouseEvent.CLICK, kembaliDariKompetensi);
+
+function kembaliDariKompetensi(e:MouseEvent):void {
+    // Putar SFX Klik (beserta penyesuaian volume dari setting)
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    // Langsung pindah ke Main Menu TANPA mematikan BGM
+    gotoAndStop("Main_Menu");
+}
+
+==============================
+
+stop();
+
+import flash.events.MouseEvent;
+
+// Pastikan tombol panah kembali Anda memiliki Instance Name: btn_back_referensi
+button_back_referensi.addEventListener(MouseEvent.CLICK, kembaliDariReferensi);
+
+function kembaliDariReferensi(e:MouseEvent):void {
+    // Putar SFX Klik (beserta penyesuaian volume dari setting)
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    // Langsung pindah ke Main Menu TANPA mematikan BGM
+    gotoAndStop("Main_Menu");
+}

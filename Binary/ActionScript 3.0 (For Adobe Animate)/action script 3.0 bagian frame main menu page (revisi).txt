@@ -1,0 +1,250 @@
+import flash.events.MouseEvent;
+import flash.media.Sound;
+import flash.media.SoundChannel;
+import flash.media.SoundTransform;
+
+stop();
+
+// ==========================================
+// 1. SETUP AUDIO GLOBAL (ANTI DOUBLE AUDIO)
+// ==========================================
+
+// MATIKAN SEMUA MUSIK YANG MUNGKIN MASIH MENYALA DARI FRAME LAIN
+if (Object(root).channelBGM != null) {
+    Object(root).channelBGM.stop();
+}
+
+// SETUP VARIABEL SETTING VOLUME (JIKA APLIKASI BARU DIBUKA)
+if (Object(root).volBGM == null) {
+    Object(root).volBGM = 0.5; // Default 50%
+    Object(root).volSFX = 0.5; // Default 50%
+    
+    Object(root).bgmTransform = new SoundTransform(Object(root).volBGM);
+    Object(root).sfxTransform = new SoundTransform(Object(root).volSFX);
+}
+
+// PUTAR MUSIK MAIN MENU DENGAN KONTROL VOLUME YANG BENAR
+if (Object(root).isBGMMenuPlaying == null || Object(root).isBGMMenuPlaying == false) {
+    var bgmMenuUtama:MusikBGM = new MusikBGM();
+    
+    // Pastikan musik masuk ke channelBGM HANYA SATU KALI dengan membawa bgmTransform
+    Object(root).channelBGM = bgmMenuUtama.play(0, 999, Object(root).bgmTransform);
+    Object(root).isBGMMenuPlaying = true;
+}
+
+// ==========================================
+// 2. NAVIGASI MENU UTAMA
+// ==========================================
+
+button_kompetensi.addEventListener(MouseEvent.CLICK, keKompetensi);
+function keKompetensi(e:MouseEvent):void { 
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    Object(root).isBGMMenuPlaying = false; // TAMBAHKAN BARIS INI
+    gotoAndStop("Kompetensi_Page"); 
+}
+
+button_referensi.addEventListener(MouseEvent.CLICK, keReferensi);
+function keReferensi(e:MouseEvent):void { 
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    Object(root).isBGMMenuPlaying = false; // TAMBAHKAN BARIS INI
+    gotoAndStop("Referensi_Page"); 
+}
+
+button_about.addEventListener(MouseEvent.CLICK, keAbout);
+function keAbout(e:MouseEvent):void { 
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    Object(root).isBGMMenuPlaying = false; // TAMBAHKAN BARIS INI
+    gotoAndStop("About_Page"); 
+}
+
+button_profile.addEventListener(MouseEvent.CLICK, keProfile);
+function keProfile(e:MouseEvent):void { 
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    Object(root).isBGMMenuPlaying = false; // TAMBAHKAN BARIS INI
+    gotoAndStop("Profile_Page"); 
+}
+
+// --- NAVIGASI KHUSUS (MATIKAN BGM SAAT PINDAH) ---
+
+button_materi.addEventListener(MouseEvent.CLICK, keMateri);
+function keMateri(e:MouseEvent):void {
+    // 1. Putar SFX Klik 
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+
+    // 2. Gunakan channelBGM yang benar dan cek apakah sedang aktif
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop(); 
+    }
+    
+    Object(root).isBGMMenuPlaying = false;
+    gotoAndStop("Materi_Page");
+}
+
+button_kuis.addEventListener(MouseEvent.CLICK, keKuis);
+function keKuis(e:MouseEvent):void {
+    // 1. Putar SFX Klik
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+
+    // 2. Gunakan channelBGM yang benar dan cek apakah sedang aktif
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop(); 
+    }
+    
+    Object(root).isBGMMenuPlaying = false;
+    gotoAndStop("Kuis_Page_Level");
+}
+
+// ==========================================
+// 3. LOGIKA POP UP SETTING & VOLUME
+// ==========================================
+if (popup_setting != null) {
+    popup_setting.visible = false; // Sembunyikan saat awal
+    sinkronisasiVisualVolume(); // Panggil fungsi untuk sesuaikan balok indikator
+    
+    // Tombol Volume BGM
+    popup_setting.button_volumeup.addEventListener(MouseEvent.CLICK, naikkanBGM);
+    popup_setting.button_volumedown.addEventListener(MouseEvent.CLICK, turunkanBGM);
+    
+    // Tombol Volume SFX
+    popup_setting.button_ringtoneup.addEventListener(MouseEvent.CLICK, naikkanSFX);
+    popup_setting.button_ringtonedown.addEventListener(MouseEvent.CLICK, turunkanSFX);
+}
+
+// --- MEMBUKA POP UP SETTING ---
+button_setting.addEventListener(MouseEvent.CLICK, bukaSetting);
+function bukaSetting(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    popup_setting.visible = true;
+}
+
+// --- MENUTUP POP UP SETTING ---
+// Pastikan Instance Name tombol OK Anda adalah 'button_ok'
+popup_setting.button_ok.addEventListener(MouseEvent.CLICK, tutupSetting);
+function tutupSetting(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    popup_setting.visible = false;
+}
+	
+
+// --- FUNGSI NAIK TURUN BGM (10% / 0.1) ---
+function naikkanBGM(e:MouseEvent):void {
+    if (Object(root).volBGM < 1.0) { 
+        Object(root).volBGM += 0.1;
+        
+        // Atasi error presisi desimal Flash (misal 0.3000000004)
+        Object(root).volBGM = Math.round(Object(root).volBGM * 10) / 10; 
+        terapkanVolumeBGM();
+    }
+}
+
+function turunkanBGM(e:MouseEvent):void {
+    if (Object(root).volBGM > 0.0) { 
+        Object(root).volBGM -= 0.1;
+        Object(root).volBGM = Math.round(Object(root).volBGM * 10) / 10;
+        terapkanVolumeBGM();
+    }
+}
+
+function terapkanVolumeBGM():void {
+    // Buat objek Transform baru agar sistem dipaksa membaca nilai baru
+    var transformBaru:SoundTransform = new SoundTransform(Object(root).volBGM);
+    Object(root).bgmTransform = transformBaru;
+    
+    // Terapkan ke lagu utama yang sedang berjalan
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.soundTransform = Object(root).bgmTransform;
+    }
+    
+    sinkronisasiVisualVolume();
+}
+
+// --- FUNGSI NAIK TURUN SFX (10% / 0.1) ---
+function naikkanSFX(e:MouseEvent):void {
+    if (Object(root).volSFX < 1.0) { 
+        Object(root).volSFX += 0.1;
+        Object(root).volSFX = Math.round(Object(root).volSFX * 10) / 10;
+        terapkanVolumeSFX();
+    }
+}
+
+function turunkanSFX(e:MouseEvent):void {
+    if (Object(root).volSFX > 0.0) { 
+        Object(root).volSFX -= 0.1;
+        Object(root).volSFX = Math.round(Object(root).volSFX * 10) / 10;
+        terapkanVolumeSFX();
+    }
+}
+
+function terapkanVolumeSFX():void {
+    var transformSFXBaru:SoundTransform = new SoundTransform(Object(root).volSFX);
+    Object(root).sfxTransform = transformSFXBaru;
+    sinkronisasiVisualVolume();
+    
+    // PENTING: Untuk mengetes volume SFX saat ditekan
+    var suaraTes:SFXKlik = new SFXKlik();
+    suaraTes.play(0, 0, Object(root).sfxTransform);
+}
+
+// --- FUNGSI ANIMASI BALOK VOLUME ---
+// Mengatur frame pada movieclip_linebacksound & movieclip_linesoundeffect
+function sinkronisasiVisualVolume():void {
+    // Konversi desimal (0.1 - 1.0) menjadi nomor frame (asumsi ada 11 frame: 1 kosong, 2-11 isi balok)
+    // Silakan sesuaikan jumlah frame di dalam movieclip Anda
+    var frameBGM:int = Math.round(Object(root).volBGM * 10) + 1;
+    var frameSFX:int = Math.round(Object(root).volSFX * 10) + 1;
+    
+    popup_setting.movieclip_linebacksound.gotoAndStop(frameBGM);
+    popup_setting.movieclip_linesoundeffect.gotoAndStop(frameSFX);
+}
+
+// ==========================================
+// LOGIKA POP UP QUIT (KELUAR)
+// ==========================================
+
+// 1. Menyembunyikan Pop-Up saat halaman utama pertama kali dibuka
+if (popup_keluar != null) {
+    popup_keluar.visible = false;
+}
+
+// --- MEMBUKA POP UP KELUAR ---
+// Asumsi tombol silang (X) bernama 'button_quit'
+button_quit.addEventListener(MouseEvent.CLICK, tampilkanPopupQuit);
+function tampilkanPopupQuit(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    popup_keluar.visible = true;
+}
+
+// --- TOMBOL BATAL KELUAR (TIDAK) ---
+popup_keluar.button_no.addEventListener(MouseEvent.CLICK, batalKeluar);
+function batalKeluar(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    popup_keluar.visible = false; // Sembunyikan kembali
+}
+
+// --- TOMBOL JADI KELUAR (YA) ---
+popup_keluar.button_yes.addEventListener(MouseEvent.CLICK, keluarAplikasi);
+function keluarAplikasi(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    import flash.system.fscommand;
+    fscommand("quit"); // Menutup aplikasi (hanya berlaku format .exe)
+}

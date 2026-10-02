@@ -1,0 +1,62 @@
+stop();
+
+// 1. CEK BGM MATERI
+if (Object(root).isBGMMateriPlaying == null || Object(root).isBGMMateriPlaying == false) {
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop();
+    }
+    Object(root).channelBGM = (new MusikMateri()).play(0, 999);
+    Object(root).isBGMMateriPlaying = true;
+}
+
+// 2. TOMBOL KEMBALI KE DAFTAR MATERI
+button_back_menu_materi.addEventListener(MouseEvent.CLICK, balikKeMenuMateri2);
+function balikKeMenuMateri2(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Materi_Page");
+}
+
+// ==========================================
+// 3. LOGIKA POP-UP LOCK TERKUNCI
+// ==========================================
+if (popup_lock_latihan != null) {
+    popup_lock_latihan.visible = false;
+    
+    // Tambahkan pengaman: Cek apakah tombol OK di dalamnya benar-benar ada
+    if (popup_lock_latihan.button_ok_lock != null) {
+        popup_lock_latihan.button_ok_lock.addEventListener(MouseEvent.CLICK, tutupPopupLock2);
+    }
+}
+
+function tutupPopupLock2(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    popup_lock_latihan.visible = false;
+}
+
+// ==========================================
+// 4. LOGIKA TOMBOL "LATIHAN SOAL"
+// ==========================================
+button_latihan_materi2.addEventListener(MouseEvent.CLICK, masukKeLatihan2);
+function masukKeLatihan2(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+
+    // Mengecek status di memori (indeks [1] berarti Latihan 2)
+    if (Object(root).statusLatihan[1] == true) {
+        Object(root).isBGMMateriPlaying = false; 
+        if (Object(root).channelBGM != null) {
+            Object(root).channelBGM.stop();
+        }
+        gotoAndStop("Latihan2_Page");
+        
+    } else {
+        // JIKA TERKUNCI: Munculkan Pop-Up dan arahkan ke frame teks yang tepat!
+        if (popup_lock_latihan != null) {
+            popup_lock_latihan.visible = true;
+            
+            // PENTING: Arahkan MovieClip Pop-up ke Frame 1 (Pesan untuk Latihan 2)
+            popup_lock_latihan.gotoAndStop(1); 
+            
+            (new SFXSalah()).play(0, 0, Object(root).sfxTransform); 
+        }
+    }
+}

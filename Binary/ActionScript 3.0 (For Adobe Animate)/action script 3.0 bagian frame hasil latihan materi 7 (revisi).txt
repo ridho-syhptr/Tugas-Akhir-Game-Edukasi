@@ -1,0 +1,48 @@
+stop();
+
+// 1. MATIKAN BACKSOUND KUIS/LATIHAN
+if (Object(root).channelBGM != null) {
+    Object(root).channelBGM.stop();
+}
+
+var skorKoin7:int = Object(root).skorAkhir;
+var levelSaatIni:int = Object(root).levelLatihanAktif; 
+
+teks_koin.text = String(skorKoin7);
+
+if (skorKoin7 >= 70) {
+    teks_keterangan.text = "Selamat! Kamu telah menyelesaikan semua latihan.";
+    mc_emoji_latihan.gotoAndStop(2);
+    (new SFXMenang()).play(0, 0, Object(root).sfxTransform);
+    
+    // HAPUS perintah membuka kunci (statusLatihan) karena sudah tamat
+    
+    // Pastikan tombol selanjutnya tetap tersembunyi
+    if (button_selanjutnya != null) {
+        button_selanjutnya.visible = false;
+    }
+} else {
+    teks_keterangan.text = "Koin belum cukup. Ayo pelajari lagi materinya!";
+    mc_emoji_latihan.gotoAndStop(1);
+    
+    // --- PUTAR SUARA KALAH LANGSUNG (BEBAS ERROR 1151 & TERHUBUNG SETTING) ---
+    (new SFXKalah()).play(0, 0, Object(root).sfxTransform);
+}
+
+// ==========================================
+// 4. LOGIKA TOMBOL "ULANGI"
+// ==========================================
+button_ulangi_latihan.addEventListener(MouseEvent.CLICK, ulangiLatihan7);
+function ulangiLatihan7(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Latihan7_Page");
+}
+
+// ==========================================
+// 5. LOGIKA TOMBOL "KEMBALI"
+// ==========================================
+button_back_menu_materi.addEventListener(MouseEvent.CLICK, kembaliKeMateriUtama7);
+function kembaliKeMateriUtama7(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Materi7");
+}

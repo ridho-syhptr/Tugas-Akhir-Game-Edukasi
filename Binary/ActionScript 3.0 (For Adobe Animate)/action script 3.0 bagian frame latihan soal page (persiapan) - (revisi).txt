@@ -1,0 +1,45 @@
+stop();
+
+// ==========================================
+// 1. CEK BGM: PUTAR MUSIK LATIHAN
+// ==========================================
+if (Object(root).isBGMLatihanPlaying == null || Object(root).isBGMLatihanPlaying == false) {
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop();
+    }
+    
+    // Mulai musik latihan dari halaman persiapan ini
+    Object(root).channelBGM = (new MusikLatihan()).play(0, 999);
+    Object(root).isBGMLatihanPlaying = true;
+    Object(root).isBGMMateriPlaying = false;
+}
+
+// ==========================================
+// 2. TOMBOL MULAI LATIHAN
+// ==========================================
+button_mulai_latihan1.addEventListener(MouseEvent.CLICK, mulaiLatihan1);
+function mulaiLatihan1(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    
+    // --- PENGATURAN KRUSIAL ---
+    // Beri tahu sistem bahwa pemain sekarang berada di Latihan 1
+    Object(root).levelLatihanAktif = 1; 
+    
+    gotoAndStop("Latihan1_Main");
+}
+
+// ==========================================
+// 3. TOMBOL KEMBALI KE MATERI
+// ==========================================
+button_back_menu_materi.addEventListener(MouseEvent.CLICK, kembaliKeMateri1);
+function kembaliKeMateri1(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    
+    // Matikan lagu Latihan karena pemain kembali ke menu Materi
+    Object(root).isBGMLatihanPlaying = false; 
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop();
+    }
+    
+    gotoAndStop("Materi1");
+}

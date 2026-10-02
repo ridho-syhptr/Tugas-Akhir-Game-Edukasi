@@ -1,0 +1,59 @@
+stop();
+
+import flash.events.MouseEvent;
+
+// --- CEK BGM: Putar Musik Kuis ---
+if (Object(root).isBGMKuisPlaying == null || Object(root).isBGMKuisPlaying == false) {
+    if (Object(root).channelBGM != null) {
+        Object(root).channelBGM.stop();
+    }
+    
+    // Gunakan pemanggilan langsung tanpa 'var' agar bebas bentrok
+    Object(root).channelBGM = (new MusikKuis()).play(0, 999);
+    
+    Object(root).isBGMKuisPlaying = true; // Tandai musik kuis sedang menyala
+    Object(root).isBGMMenuPlaying = false; // Matikan status lagu Main Menu
+}
+
+// ==========================================
+// 1. TOMBOL KEMBALI KE MENU UTAMA
+// ==========================================
+// Pastikan Instance Name tombol panah adalah: btn_back_kuis
+button_back_kuis.addEventListener(MouseEvent.CLICK, kembaliKeMenuKuis);
+
+function kembaliKeMenuKuis(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    // PENTING: Matikan status musik kuis agar bisa diputar lagi nanti!
+    Object(root).isBGMKuisPlaying = false; 
+    
+    gotoAndStop("Main_Menu");
+}
+
+// 2. TOMBOL MENUJU KUIS LEVEL MUDAH
+// Pastikan Instance Name tombolnya adalah: btn_level_mudah
+button_mudah.addEventListener(MouseEvent.CLICK, masukMudah);
+function masukMudah(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Kuis_Page_Mudah"); 
+}
+
+// 3. TOMBOL MENUJU KUIS LEVEL SEDANG
+// Pastikan Instance Name tombolnya adalah: btn_level_sedang
+button_sedang.addEventListener(MouseEvent.CLICK, masukSedang);
+function masukSedang(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Kuis_Page_Sedang"); 
+}
+
+// 4. TOMBOL MENUJU KUIS LEVEL SULIT
+// Pastikan Instance Name tombolnya adalah: btn_level_sulit
+button_sulit.addEventListener(MouseEvent.CLICK, masukSulit);
+function masukSulit(e:MouseEvent):void {
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Kuis_Page_Sulit"); 
+}

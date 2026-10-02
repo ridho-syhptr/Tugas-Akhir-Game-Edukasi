@@ -1,0 +1,26 @@
+import flash.display.StageDisplayState;
+import flash.system.fscommand;
+import flash.utils.setTimeout;
+
+// Membuat daftar status (Array) untuk 7 Latihan.
+// true = Terbuka, false = Terkunci.
+// Latihan 1 (indeks 0) disetel 'true' sejak awal.
+if (Object(root).statusLatihan == null) {
+    Object(root).statusLatihan = [true, false, false, false, false, false, false];
+}
+
+// --- 1. PENGATURAN LAYAR PENUH ---
+stage.displayState = StageDisplayState.FULL_SCREEN;
+fscommand("fullscreen", "true");
+stage.scaleMode = flash.display.StageScaleMode.SHOW_ALL;
+
+// Menghentikan timeline agar tidak meluncur bebas
+stop();
+
+// --- 2. JEDA OTOMATIS PINDAH HALAMAN ---
+// Angka 4000 = 4 detik. 
+setTimeout(pindahKeIntro, 4000); 
+
+function pindahKeIntro():void {
+    gotoAndStop("Intro_Page");
+}

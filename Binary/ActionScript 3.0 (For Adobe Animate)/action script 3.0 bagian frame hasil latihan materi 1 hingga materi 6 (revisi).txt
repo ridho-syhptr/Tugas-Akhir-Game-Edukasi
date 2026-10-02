@@ -1,0 +1,63 @@
+stop();
+
+// 1. MATIKAN BACKGROUND LATIHAN SEBELUMNYA & RESET STATUS
+if (Object(root).channelBGM != null) {
+    Object(root).channelBGM.stop();
+}
+Object(root).isBGMLatihanPlaying = false; 
+
+var skorKoin1:int = Object(root).skorAkhir;
+teks_koin.text = String(skorKoin1);
+
+// Default: Sembunyikan tombol selanjutnya
+if (button_selanjutnya != null) {
+    button_selanjutnya.visible = false; 
+}
+
+// 2. EVALUASI KELULUSAN
+if (skorKoin1 >= 70) {
+    teks_keterangan.text = "Luar biasa! Materi selanjutnya berhasil dibuka.";
+    mc_emoji_latihan.gotoAndStop(2);
+    (new SFXMenang()).play(0, 0, Object(root).sfxTransform);
+    
+    // Buka kunci Latihan 2 (Indeks 1)
+    Object(root).statusLatihan[1] = true;
+    
+    // Munculkan tombol selanjutnya
+    if (button_selanjutnya != null) {
+        button_selanjutnya.visible = true;
+    }
+} else {
+    teks_keterangan.text = "Koin belum cukup. Ayo pelajari lagi materinya!";
+    mc_emoji_latihan.gotoAndStop(1);
+    (new SFXKalah()).play(0, 0, Object(root).sfxTransform);
+}
+
+// ==========================================
+// 3. LOGIKA TOMBOL "SELANJUTNYA" (Ke Latihan 2)
+// ==========================================
+if (button_selanjutnya != null) {
+    button_selanjutnya.addEventListener(MouseEvent.CLICK, lanjutKeLatihan2);
+}
+function lanjutKeLatihan2(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Latihan2_Page");
+}
+
+// ==========================================
+// 4. LOGIKA TOMBOL "ULANGI" (Kembali ke Latihan 1)
+// ==========================================
+button_ulangi_latihan.addEventListener(MouseEvent.CLICK, ulangiLatihan1);
+function ulangiLatihan1(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Latihan1_Page");
+}
+
+// ==========================================
+// 5. LOGIKA TOMBOL "KEMBALI" (Ke Menu Materi)
+// ==========================================
+button_back_menu_materi.addEventListener(MouseEvent.CLICK, kembaliKeMateriUtama1);
+function kembaliKeMateriUtama1(e:MouseEvent):void {
+    (new SFXKlik()).play(0, 0, Object(root).sfxTransform);
+    gotoAndStop("Materi1");
+}

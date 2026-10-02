@@ -1,0 +1,170 @@
+stop();
+
+import flash.utils.Timer;
+import flash.events.TimerEvent;
+import flash.utils.setTimeout; // Wajib ditambahkan untuk fungsi jeda waktu
+
+import flash.media.Sound;
+import flash.media.SoundChannel;
+
+// Mengatur waktu kuis (misal: 60 detik)
+var waktuTersisa:int = 180; 
+// Membuat timer yang berdetak setiap 1000 milidetik (1 detik)
+var timerKuisSedang:Timer = new Timer(1000, waktuTersisa); 
+
+timerKuisSedang.addEventListener(TimerEvent.TIMER, hitungMundurSedang);
+timerKuisSedang.start(); // Menjalankan waktu
+
+function hitungMundurSedang(e:TimerEvent):void {
+    waktuTersisa--; // Waktu berkurang 1 setiap detik
+    teks_waktu.text = waktuTersisa + " detik";
+    
+    // Jika waktu habis, paksa pindah ke halaman hasil
+    if (waktuTersisa <= 0) {
+        timerKuisSedang.stop();
+        gotoAndStop("Kuis_Result"); 
+    }
+}
+
+// 1. Membuat Bank Soal (Berisi 15 Soal)
+var bankSoalSedang:Array = [
+    {soal: "Angka 7 pada bilangan 726 menempati nilai tempat...", jawabanBenar: "Ratusan", opsiA: "Ratusan", opsiB: "Puluhan", opsiC: "Satuan"},
+    {soal: "Hasil dari 50 + 25 adalah...", jawabanBenar: "75", opsiA: "65", opsiB: "70", opsiC: "75"},
+    {soal: "Berapa nilai puluhan dari 150?", jawabanBenar: "5", opsiA: "1", opsiB: "5", opsiC: "0"},
+    {soal: "Bilangan 3 ratusan + 4 puluhan + 2 satuan adalah...", jawabanBenar: "342", opsiA: "324", opsiB: "342", opsiC: "432"},
+    {soal: "Hasil pengurangan dari 80 - 25 adalah...", jawabanBenar: "55", opsiA: "45", opsiB: "55", opsiC: "65"},
+    {soal: "Lambang bilangan 'dua ratus lima belas' adalah...", jawabanBenar: "215", opsiA: "250", opsiB: "215", opsiC: "205"},
+    {soal: "Angka satuan dari bilangan 567 adalah...", jawabanBenar: "7", opsiA: "5", opsiB: "6", opsiC: "7"},
+    {soal: "Berapakah hasil dari 120 + 35?", jawabanBenar: "155", opsiA: "155", opsiB: "145", opsiC: "165"},
+    {soal: "Nilai angka 8 pada bilangan 845 adalah...", jawabanBenar: "800", opsiA: "8", opsiB: "80", opsiC: "800"},
+    {soal: "2 ratusan + 0 puluhan + 8 satuan sama dengan...", jawabanBenar: "208", opsiA: "280", opsiB: "208", opsiC: "28"},
+    {soal: "Bilangan cacah tepat setelah angka 99 adalah...", jawabanBenar: "100", opsiA: "98", opsiB: "100", opsiC: "101"},
+    {soal: "Hasil penjumlahan dari 45 + 45 adalah...", jawabanBenar: "90", opsiA: "80", opsiB: "90", opsiC: "100"},
+    {soal: "100 dikurangi 40 sama dengan...", jawabanBenar: "60", opsiA: "50", opsiB: "60", opsiC: "70"},
+    {soal: "Manakah bilangan yang lebih besar dari 350?", jawabanBenar: "355", opsiA: "340", opsiB: "355", opsiC: "305"},
+    {soal: "40 + ... = 90. Angka yang tepat untuk mengisi titik-titik adalah...", jawabanBenar: "50", opsiA: "50", opsiB: "40", opsiC: "60"}
+];
+
+var skorSedang:int = 0;
+var indeksSoalSedang:int = 0;
+
+// Ubah batas soal menjadi 15
+var totalSoalDimainkan:int = 15;
+
+// 2. Fungsi Mengacak Urutan Soal (Gamifikasi agar tidak bisa dihafal)
+bankSoalSedang.sort(acakSoal);
+function acakSoal(a:Object, b:Object):int {
+    return Math.floor(Math.random() * 3) - 1;
+}
+
+// Fungsi baru untuk mengacak urutan opsi A, B, C
+function acakPilihan(a:*, b:*):int {
+    return (Math.random() > 0.5) ? 1 : -1;
+}
+
+// Sembunyikan feedback saat kuis baru dimulai
+mc_feedback.gotoAndStop(1);
+
+// 3. Fungsi Menampilkan Soal ke Layar
+function tampilkanSoal():void {
+    if (indeksSoalSedang < totalSoalDimainkan && indeksSoalSedang < bankSoalSedang.length) {
+        
+        // --- MENAMPILKAN NOMOR SOAL ---
+        // Akan memunculkan teks contoh: "Soal 1 dari 15"
+        teks_nomor_soal.text = "Soal " + (indeksSoalSedang + 1) + " dari " + totalSoalDimainkan;
+        
+        teks_soal.text = bankSoalSedang[indeksSoalSedang].soal;
+        teks_skor.text = "Skor: " + skor;
+        
+        // Mengacak pilihan ganda
+        var daftarPilihan:Array = [bankSoalSedang[indeksSoalSedang].opsiA, bankSoalSedang[indeksSoalSedang].opsiB, bankSoalSedang[indeksSoalSedang].opsiC];
+        daftarPilihan.sort(acakPilihan); 
+        
+        teks_pilihan_a.text = daftarPilihan[0];
+        teks_pilihan_b.text = daftarPilihan[1];
+        teks_pilihan_c.text = daftarPilihan[2];
+        
+        // --- RESET TAMPILAN UNTUK SOAL BARU ---
+        mc_feedback.gotoAndStop(1); // Hilangkan gambar benar/salah
+        
+        // Aktifkan kembali tombol agar bisa diklik
+        button_a.mouseEnabled = true;
+        button_b.mouseEnabled = true;
+        button_c.mouseEnabled = true;
+        
+    } else {
+        // Jika soal sudah habis, hentikan dan hapus timer
+        timerKuisSedang.stop();
+        timerKuisSedang.removeEventListener(TimerEvent.TIMER, hitungMundurSedang); // Tambahkan baris ini
+        gotoAndStop("Kuis_Result");
+    }
+}
+
+// Panggil soal pertama kali
+tampilkanSoal();
+
+// 4. Mendaftarkan Event Listener untuk Tombol Jawaban
+button_a.addEventListener(MouseEvent.CLICK, cekJawaban);
+button_b.addEventListener(MouseEvent.CLICK, cekJawaban);
+button_c.addEventListener(MouseEvent.CLICK, cekJawaban);
+
+function cekJawaban(e:MouseEvent):void {
+    // --- CEGAH KLIK GANDA ---
+    // Matikan tombol sementara agar anak-anak tidak menekan tombol berkali-kali saat jeda
+    button_a.mouseEnabled = false;
+    button_b.mouseEnabled = false;
+    button_c.mouseEnabled = false;
+    
+	// Memutar SFX Klik saat pemain menekan pilihan jawaban
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play();
+	
+    var teksJawabanPemain:String = "";
+    
+    if(e.currentTarget == button_a) teksJawabanPemain = teks_pilihan_a.text;
+    if(e.currentTarget == button_b) teksJawabanPemain = teks_pilihan_b.text;
+    if(e.currentTarget == button_c) teksJawabanPemain = teks_pilihan_c.text;
+    
+    // Mencocokkan jawaban
+    if(teksJawabanPemain == bankSoalSedang[indeksSoalSedang].jawabanBenar) {
+        skor += 10; 
+        mc_feedback.gotoAndStop(2); // Munculkan gambar Centang Hijau di Frame 2
+		
+		// --- TAMBAHKAN SUARA BENAR ---
+        var suaraBenar:SFXBenar = new SFXBenar();
+        suaraBenar.play();
+		
+    } else {
+        mc_feedback.gotoAndStop(3); // Munculkan gambar Silang Merah di Frame 3
+		
+		// --- TAMBAHKAN SUARA SALAH ---
+        var suaraSalah:SFXSalah = new SFXSalah();
+        suaraSalah.play();
+		
+    }
+    
+    // --- FUNGSI JEDA (DELAY) ---
+    // Tunggu selama 1500 milidetik (1,5 detik), lalu jalankan fungsi pindahSoal
+    setTimeout(pindahSoal, 1500); 
+}
+
+// 5. Fungsi Eksekusi Pindah Soal Setelah Jeda
+function pindahSoal():void {
+    indeksSoalSedang++; // Lanjut ke antrean soal berikutnya
+    tampilkanSoal(); // Segarkan tampilan layar
+}
+
+button_back_kuis.addEventListener(MouseEvent.CLICK, keluarKuis);
+function keluarKuis(e:MouseEvent):void {
+    // 1. Putar SFX Klik
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+
+    if (timerKuisSedang != null) {
+        timerKuisSedang.stop(); 
+        timerKuisSedang.removeEventListener(TimerEvent.TIMER, hitungMundurSedang); 
+    }
+    
+    // Langsung pindah ke menu level tanpa mematikan BGM
+    gotoAndStop("Kuis_Page_Level"); 
+}

@@ -1,0 +1,72 @@
+stop();
+
+// 1. MATIKAN BACKGROUND KUIS SEBELUMNYA
+if (Object(root).channelBGM != null) {
+    Object(root).channelBGM.stop();
+}
+
+// 2. PENTING: RESET STATUS LAGU KUIS AGAR BISA DIPUTAR ULANG NANTI!
+Object(root).isBGMKuisPlaying = false; 
+
+// 3. Mengambil data skor dan level dari memori global root
+var skorPemain:int = Object(root).skorAkhir;
+var kuisTerakhir:String = Object(root).levelAktif;
+var batasKKM:int = 0;
+
+// Menampilkan skor ke layar
+teks_nilai_akhir.text = String(skorPemain);
+
+// Menentukan KKM secara dinamis berdasarkan level yang dikerjakan
+if (kuisTerakhir == "Mudah") {
+    batasKKM = 70;
+} else if (kuisTerakhir == "Sedang") {
+    batasKKM = 70;
+} else if (kuisTerakhir == "Sulit") {
+    batasKKM = 100;
+}
+
+// 4. Logika Evaluasi Kelulusan KKM & Sound Effect
+if (skorPemain >= batasKKM) {
+    teks_keterangan.text = "Hebat! Hasil kamu sudah mencukupi.";
+    mc_emoji.gotoAndStop(2); // Menampilkan emoji senang
+    
+    // --- PUTAR SUARA MENANG (DENGAN KONTROL VOLUME) ---
+    var suaraMenang:SFXMenang = new SFXMenang();
+    suaraMenang.play(0, 0, Object(root).sfxTransform);
+    
+} else {
+    teks_keterangan.text = "Maaf, kamu gagal. Ayo coba lagi!";
+    mc_emoji.gotoAndStop(1); // Menampilkan emoji sedih
+    
+    // --- PUTAR SUARA KALAH (DENGAN KONTROL VOLUME) ---
+    var suaraKalah:SFXKalah = new SFXKalah();
+    suaraKalah.play(0, 0, Object(root).sfxTransform);
+}
+
+// ==========================================
+// 5. NAVIGASI TOMBOL ULANGI
+// ==========================================
+button_ulangi.addEventListener(MouseEvent.CLICK, ulangiKuisDariAwal);
+
+function ulangiKuisDariAwal(e:MouseEvent):void {
+    // Putar SFX Klik
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    gotoAndStop("Kuis_Page_Level"); 
+}
+
+// ==========================================
+// 6. NAVIGASI TOMBOL KEMBALI (PANAH MERAH)
+// ==========================================
+// Pastikan Instance Name tombol panah merah Anda sudah diisi (misal: button_back_result)
+// Jika namanya berbeda, sesuaikan baris di bawah ini
+button_back_kuis.addEventListener(MouseEvent.CLICK, kembaliKeMenuLevel);
+
+function kembaliKeMenuLevel(e:MouseEvent):void {
+    // Putar SFX Klik
+    var suaraKlik:SFXKlik = new SFXKlik();
+    suaraKlik.play(0, 0, Object(root).sfxTransform);
+    
+    gotoAndStop("Kuis_Page_Level"); 
+}
