@@ -6,6 +6,7 @@
 3. Aplikasi dapat berjalan langsung secara offline di OS Windows tanpa memerlukan instalasi tambahan.
 4. Masukkan nama pada layar awal, lalu pilih level permainan (Mudah, Sedang, Sulit).
 
+## Profil Pengembang
 - Nama : **Muhammad Ridho**
 - NIM : **3202316013**
 - Jurusan : **Teknik Elektro**
